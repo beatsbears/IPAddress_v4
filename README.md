@@ -1,4 +1,5 @@
 # IPAddress_v4
+[![Build Status](https://travis-ci.org/beatsbears/IPAddress_v4.svg?branch=master)](https://travis-ci.org/beatsbears/IPAddress_v4)
 
 IPAddress_v4 is a Swift library for doing basic handling of IPv4 Addresses expressed as single addresses, ranges, or CIDRs.
 
