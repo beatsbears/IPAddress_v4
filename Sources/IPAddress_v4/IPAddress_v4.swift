@@ -5,14 +5,14 @@
 
 /// All definitions based on IANA Assignments
 /// Ref: https://www.iana.org/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xhtml
-private let MULTICAST_RANGE = ClosedRange(uncheckedBounds: (lower: 3758096384, upper: 4026531839))
-private let PRIVATE_RANGES = [ClosedRange(uncheckedBounds: (lower: 167772160, upper: 184549375)),
-                              ClosedRange(uncheckedBounds: (lower: 2886729728, upper: 2887778303)),
-                              ClosedRange(uncheckedBounds: (lower: 3232235520, upper: 3232301055))]
-private let RESERVED_RANGE = ClosedRange(uncheckedBounds: (lower: 4026531840, upper: 4294967295))
-private let LOOPBACK_RANGE = ClosedRange(uncheckedBounds: (lower: 2130706432, upper: 2147483647))
-private let LOCAL_LINK_RANGE = ClosedRange(uncheckedBounds: (lower: 2851995648, upper: 2852061183))
-private let VALID_IP_SPACE = ClosedRange(uncheckedBounds: (lower: 0, upper: 4294967296))
+private let MULTICAST_RANGE = ClosedRange(uncheckedBounds: (lower: 3758096384 as UInt32, upper: 4026531839 as UInt32))
+private let PRIVATE_RANGES = [ClosedRange(uncheckedBounds: (lower: 167772160 as UInt32, upper: 184549375 as UInt32)),
+                              ClosedRange(uncheckedBounds: (lower: 2886729728 as UInt32, upper: 2887778303 as UInt32)),
+                              ClosedRange(uncheckedBounds: (lower: 3232235520 as UInt32, upper: 3232301055 as UInt32))]
+private let RESERVED_RANGE = ClosedRange(uncheckedBounds: (lower: 4026531840 as UInt32, upper: 4294967295 as UInt32))
+private let LOOPBACK_RANGE = ClosedRange(uncheckedBounds: (lower: 2130706432 as UInt32, upper: 2147483647 as UInt32))
+private let LOCAL_LINK_RANGE = ClosedRange(uncheckedBounds: (lower: 2851995648 as UInt32, upper: 2852061183 as UInt32))
+private let VALID_IP_SPACE = ClosedRange(uncheckedBounds: (lower: 0 as UInt32, upper: 4294967296 as UInt32))
 private let IP_VERSION = 4
 private let MAX_PREFIX_LENGTH = 32
 
