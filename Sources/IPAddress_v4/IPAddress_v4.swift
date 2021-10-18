@@ -5,14 +5,13 @@
 
 /// All definitions based on IANA Assignments
 /// Ref: https://www.iana.org/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xhtml
-private let MULTICAST_RANGE = ClosedRange(uncheckedBounds: (lower: 3758096384 as UInt32, upper: 4026531839 as UInt32))
-private let PRIVATE_RANGES = [ClosedRange(uncheckedBounds: (lower: 167772160 as UInt32, upper: 184549375 as UInt32)),
-                              ClosedRange(uncheckedBounds: (lower: 2886729728 as UInt32, upper: 2887778303 as UInt32)),
-                              ClosedRange(uncheckedBounds: (lower: 3232235520 as UInt32, upper: 3232301055 as UInt32))]
-private let RESERVED_RANGE = ClosedRange(uncheckedBounds: (lower: 4026531840 as UInt32, upper: 4294967295 as UInt32))
-private let LOOPBACK_RANGE = ClosedRange(uncheckedBounds: (lower: 2130706432 as UInt32, upper: 2147483647 as UInt32))
-private let LOCAL_LINK_RANGE = ClosedRange(uncheckedBounds: (lower: 2851995648 as UInt32, upper: 2852061183 as UInt32))
-private let VALID_IP_SPACE = ClosedRange(uncheckedBounds: (lower: 0 as UInt32, upper: 4294967296 as UInt32))
+private let MULTICAST_RANGE: ClosedRange<UInt32> = ClosedRange(uncheckedBounds: (lower: 3758096384, upper: 4026531839))
+private let PRIVATE_RANGES: [ClosedRange<UInt32>] = [ClosedRange(uncheckedBounds: (lower: 167772160, upper: 184549375)),
+                              ClosedRange(uncheckedBounds: (lower: 2886729728, upper: 2887778303)),
+                              ClosedRange(uncheckedBounds: (lower: 3232235520, upper: 3232301055))]
+private let RESERVED_RANGE: ClosedRange<UInt32> = ClosedRange(uncheckedBounds: (lower: 4026531840, upper: 4294967295))
+private let LOOPBACK_RANGE: ClosedRange<UInt32> = ClosedRange(uncheckedBounds: (lower: 2130706432, upper: 2147483647))
+private let LOCAL_LINK_RANGE: ClosedRange<UInt32> = ClosedRange(uncheckedBounds: (lower: 2851995648, upper: 2852061183))
 private let IP_VERSION = 4
 private let MAX_PREFIX_LENGTH = 32
 
@@ -20,7 +19,7 @@ public class IPAddress_v4 {
     /// Represents a single IPv4 Address.
     
     public var address: String?
-    public var integer: Int?
+    public var integer: UInt32?
     public var version: Int = IP_VERSION
     public var reversePointer: String?
     public var isMulticast: Bool?
@@ -30,41 +29,29 @@ public class IPAddress_v4 {
     public var isLinkLocal: Bool?
     
     public init(_ rep: String) throws {
-        do {
-            if IPAddress_v4.isValidIPv4(rep) {
-                self.address = rep
-                self.integer = IPAddress_v4.IPv4ToInt(rep)
-                self.isMulticast = self.isMulticast(self.integer!)
-                self.isPrivate = self.isPrivate(self.integer!)
-                self.isReserved = self.isReserved(self.integer!)
-                self.isLoopback = self.isLoopback(self.integer!)
-                self.isLinkLocal = self.isLocalLink(self.integer!)
-                self.reversePointer = "\(rep.split(separator: ".").reversed().joined(separator: ".")).in-addr.arpa"
-            } else {
-                throw IPAddressParsingError(kind: .invalidValue)
-            }
-        } catch {
+        if IPAddress_v4.isValidIPv4(rep) {
+            self.address = rep
+            self.integer = IPAddress_v4.IPv4ToInt(rep)
+            self.isMulticast = self.isMulticast(self.integer!)
+            self.isPrivate = self.isPrivate(self.integer!)
+            self.isReserved = self.isReserved(self.integer!)
+            self.isLoopback = self.isLoopback(self.integer!)
+            self.isLinkLocal = self.isLocalLink(self.integer!)
+            self.reversePointer = "\(rep.split(separator: ".").reversed().joined(separator: ".")).in-addr.arpa"
+        } else {
             throw IPAddressParsingError(kind: .invalidValue)
         }
     }
     
-    public init(_ rep: Int) throws {
-        do {
-            if VALID_IP_SPACE.contains(rep) {
-                self.address = self.IntToIPv4(rep)
-                self.integer = rep
-                self.isMulticast = self.isMulticast(rep)
-                self.isPrivate = self.isPrivate(rep)
-                self.isReserved = self.isReserved(rep)
-                self.isLoopback = self.isLoopback(rep)
-                self.isLinkLocal = self.isLocalLink(rep)
-                self.reversePointer = "\(self.address!.split(separator: ".").reversed().joined(separator: ".")).in-addr.arpa"
-            } else {
-                throw IPAddressParsingError(kind: .invalidValue)
-            }
-        } catch {
-            throw IPAddressParsingError(kind: .invalidValue)
-        }
+    public init(_ rep: UInt32) throws {
+        self.address = self.IntToIPv4(rep)
+        self.integer = rep
+        self.isMulticast = self.isMulticast(rep)
+        self.isPrivate = self.isPrivate(rep)
+        self.isReserved = self.isReserved(rep)
+        self.isLoopback = self.isLoopback(rep)
+        self.isLinkLocal = self.isLocalLink(rep)
+        self.reversePointer = "\(self.address!.split(separator: ".").reversed().joined(separator: ".")).in-addr.arpa"
     }
     
     class func isValidIPv4(_ ip: String) -> Bool {
@@ -73,24 +60,24 @@ public class IPAddress_v4 {
         return octets.count == 4 && nums.count == 4 && !nums.contains { $0 < 0 || $0 > 255 }
     }
     
-    class func IPv4ToInt(_ ip: String) -> Int {
-        let octets: [Int] = ip.split(separator: ".").map({Int($0)!})
-        var total: Int = 0
+    class func IPv4ToInt(_ ip: String) -> UInt32 {
+        let octets: [UInt32] = ip.split(separator: ".").map({UInt32($0)!})
+        var total: UInt32 = 0
         for i in stride(from:3, through:0, by:-1) {
             total += octets[3-i] << (i * 8)
         }
         return total
     }
     
-    func IntToIPv4(_ int: Int) -> String {
+    func IntToIPv4(_ int: UInt32) -> String {
         return String((int >> 24) & 0xFF) + "." + String((int >> 16) & 0xFF) + "." + String((int >> 8) & 0xFF) + "." + String(int & 0xFF)
     }
     
-    func isMulticast(_ ip: Int) -> Bool {
+    func isMulticast(_ ip: UInt32) -> Bool {
         return MULTICAST_RANGE.contains(ip)
     }
     
-    func isPrivate(_ ip: Int) -> Bool {
+    func isPrivate(_ ip: UInt32) -> Bool {
         for range in PRIVATE_RANGES {
             if range.contains(ip) {
                 return true
@@ -99,15 +86,15 @@ public class IPAddress_v4 {
         return false
     }
     
-    func isReserved(_ ip: Int) -> Bool {
+    func isReserved(_ ip: UInt32) -> Bool {
         return RESERVED_RANGE.contains(ip)
     }
     
-    func isLoopback(_ ip: Int) -> Bool {
+    func isLoopback(_ ip: UInt32) -> Bool {
         return LOOPBACK_RANGE.contains(ip)
     }
     
-    func isLocalLink(_ ip: Int) -> Bool {
+    func isLocalLink(_ ip: UInt32) -> Bool {
         return LOCAL_LINK_RANGE.contains(ip)
     }
 }
